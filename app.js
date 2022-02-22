@@ -40,9 +40,21 @@ app.get("/restaurants", function (req, res) {
   //   THE THIRD PARAMETER is grabbing the storedRestaurant objects from the JSON file and rendering them
 });
 
-app.get("/restaurants/:id", function (req, res) { // /restaurants/r1 etc access
-    const restaurantId = req.params.id; //the .id is of course because we chose 'restaurants/:id' if we picked something else that would change too.
-    res.render('restaurant-detail', { rid: restaurantId });
+app.get("/restaurants/:id", function (req, res) {
+  // /restaurants/r1 etc access
+  const restaurantId = req.params.id; //the .id is of course because we chose 'restaurants/:id' if we picked something else that would change too.
+
+  const filePath = path.join(__dirname, "data", "restaurants.json");
+
+  const fileData = fs.readFileSync(filePath);
+  const storedRestaurants = JSON.parse(fileData);
+  for (const restaurant of storedRestaurants) {
+    if (restaurant.id === restaurantId) {
+      return res.render("restaurant-detail", { restaurant: restaurant }); // grabs the restaurant if it matches our ID and then exits the loop, since we have what we need.
+    }
+  }
+
+  res.status(404).render("404"); // rendering the 404 page, but also setting the status code to 404
 });
 
 app.get("/about", function (req, res) {
@@ -66,16 +78,30 @@ app.get("/recommend", function (req, res) {
 app.post("/recommend", function (req, res) {
   const restaurant = req.body;
   restaurant.id = uuid.v4(); //randomly generates an ID and appends it to the restaurant object. in JS if you do .whatever on an object that doesn't have that already it will just add it for you.
-  const filePath = path.join(__dirname, "data", "restaurants.json");
 
-  const fileData = fs.readFileSync(filePath);
-  const storedRestaurants = JSON.parse(fileData); // takes the shit from fileData and converts it from text into useable javascrip object
+  const storedRestaurants = getStoredRestaurants();
+
+  // const filePath = path.join(__dirname, "data", "restaurants.json");
+
+  // const fileData = fs.readFileSync(filePath);
+  // const storedRestaurants = JSON.parse(fileData); // takes the shit from fileData and converts it from text into useable javascrip object
 
   storedRestaurants.push(restaurant);
 
-  fs.writeFileSync(filePath, JSON.stringify(storedRestaurants)); //converts it back into text
+  storeRestaurants(storedRestaurants); // this does what the below code does, just trimmed
+  // fs.writeFileSync(filePath, JSON.stringify(storedRestaurants)); //converts it back into text
 
   res.redirect("/confirm");
+});
+
+app.use(function (req, res) {
+  //placed at bottom of the page, so taht it catches any requests or whatever not grabbed by anything else
+  res.status(404).render("404"); // just renders 404 page
+});
+
+app.use(function (error, req, res, next) {
+  // this invokes the native error handler in expressJS. it absolutely REQUIRES 4 parameters, one of which being the error parameter.
+  res.status(500).render("500"); // sets code to error 500 and also renders our error 500 page
 });
 
 app.listen(3000); // sets up server that listens to requests
