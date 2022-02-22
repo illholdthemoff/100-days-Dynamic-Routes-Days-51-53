@@ -5,3 +5,10 @@ Remember,
 
 
 with ejs we can serve static files through app.use(express.static("public")); a bit of middleware that grabs the content of a folder, in this case the "public" folder. Of course in such a case only folders that should be accessible to everyone should be in there.
+
+route parameters = "restaurants/:id" etc, completely mandatory if you want to display things, such as the restaurant page that corresponds with that id
+these are used to choose which route becomes active. They are then parsed inside the route to get its value for the route parameter
+
+
+Query Parameters == optional, adds extra data to url path ie "/restaurants?order=asc
+again, basically used for attaching extra information to a loaded route or URL
