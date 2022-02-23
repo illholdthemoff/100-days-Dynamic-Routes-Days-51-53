@@ -6,9 +6,19 @@ Remember,
 
 with ejs we can serve static files through app.use(express.static("public")); a bit of middleware that grabs the content of a folder, in this case the "public" folder. Of course in such a case only folders that should be accessible to everyone should be in there.
 
-route parameters = "restaurants/:id" etc, completely mandatory if you want to display things, such as the restaurant page that corresponds with that id
-these are used to choose which route becomes active. They are then parsed inside the route to get its value for the route parameter
+
+req.params = object that contains properties mapped to parameters. For example, if you have the route /restaurants/:id, then the id property is available as req.params.id. also note, if that :id was :rid instead, it would be req.params.rid instead. Using this we could create a dynamic route by going into a data json file and grabbing the id from one of the objects in there
+
+Dynamic route parameters = "restaurants/:id" etc, completely mandatory if you want to display things, such as the restaurant page that corresponds WITH THAT id
+these are used to choose which route becomes active. They are then parsed inside the route to get its value for the route parameter. Again like mentioned above, they are typically given a unique ID, as typically as developers we do not know how many there will be when we code it (ie if we have a bunch of randoms adding entries to restaurants, we dont know how many will, and thus this covers us.) AGAIN think of it like a randdomly generated URL path specifically for dynamic content and detail pages
+SYNTAX IS "path/whatever/:id"
 
 
 Query Parameters == optional, adds extra data to url path ie "/restaurants?order=asc
-again, basically used for attaching extra information to a loaded route or URL
+again, basically used for attaching extra information to a loaded route or URL, or maybe for showing that you sorted a list of items in ascending manner (/restaurants?order=asc is the general syntax)
+
+uuid - package you can add that generates unique IDs
+adding unique ids - if we want we can simply append .id to a restaurant item or wahtever, js will allow this and simply add it to the objects
+ids are instantiated as below:
+assuming object is called thing, and id is called id, and uuid was included as uuid:
+thing.id = uuid.v4(); <- returns and appends a string of shit to id
